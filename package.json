@@ -1,0 +1,28 @@
+{
+  "name": "benchmark-runner",
+  "version": "1.0.0",
+  "description": "A program for running energy consumption benchmarks on several different websites",
+  "main": "index.js",
+  "scripts": {
+    "test": "bm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FrameworkBench-RepPack/benchmark-runner.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/FrameworkBench-RepPack/benchmark-runner/issues"
+  },
+  "homepage": "https://github.com/FrameworkBench-RepPack/benchmark-runner#readme",
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "@types/selenium-webdriver": "^4.35.2",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "selenium-webdriver": "^4.37.0"
+  }
+}
