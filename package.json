@@ -4,7 +4,7 @@
   "description": "A program for running energy consumption benchmarks on several different websites",
   "main": "index.js",
   "scripts": {
-    "test": "bm"
+    "bm": "tsx src/index.ts"
   },
   "repository": {
     "type": "git",
