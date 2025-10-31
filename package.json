@@ -1,6 +1,7 @@
 {
   "name": "benchmark-runner",
   "version": "1.0.0",
+  "type": "module",
   "description": "A program for running energy consumption benchmarks on several different websites",
   "main": "index.js",
   "scripts": {
@@ -19,6 +20,7 @@
   "devDependencies": {
     "@types/node": "^24.9.1",
     "@types/selenium-webdriver": "^4.35.2",
+    "commander": "^14.0.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   },

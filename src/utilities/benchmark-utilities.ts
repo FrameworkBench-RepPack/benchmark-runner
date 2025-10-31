@@ -1,7 +1,9 @@
 import path from "path";
 import { Driver } from "selenium-webdriver/firefox";
-import { buildWebDriver } from "./driver-builder";
-import ProfilerHandler, { ProfilerOptions } from "./profiler-helper";
+import { buildWebDriver } from "./browser-utilities/driver-builder";
+import ProfilerHandler, {
+  ProfilerOptions,
+} from "./browser-utilities/profiler-helper";
 
 // Configure service builder - Geckodriver handler
 const RESULTS_PATH = path.resolve(__dirname, "../profiler-results/");

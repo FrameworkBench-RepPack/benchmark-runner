@@ -1,15 +1,11 @@
-import { By, until } from "selenium-webdriver";
+import { until } from "selenium-webdriver";
 import { Driver } from "selenium-webdriver/firefox";
-import { ProfilerOptions } from "../utilities/profiler-helper";
 import { profilerWrapper } from "../utilities/benchmark-utilities";
+import BenchmarkInput from "./benchmark-types";
 
 const BENCHMARK_NAME = "static-site" as const;
 
-export async function benchmarkStatic(
-  framework: string,
-  link: string,
-  profilerOptions: ProfilerOptions
-) {
+export async function benchmarkStatic(options: BenchmarkInput) {
   const openExampleSite = async (driver: Driver) => {
     await driver.navigate().to("https://google.com");
     await driver.wait(until.titleIs("Google"), 10000);
@@ -39,8 +35,8 @@ export async function benchmarkStatic(
 
   await profilerWrapper(
     BENCHMARK_NAME,
-    framework,
-    profilerOptions,
+    options.framework,
+    options.profilerOptions,
     changeSite,
     openExampleSite,
     closeTab
