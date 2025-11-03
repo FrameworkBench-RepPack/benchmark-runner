@@ -48,4 +48,4 @@ Options:
 ```
 
 ## License
-This project is licensed under the [MIT License](https://github.com/FrameworkBench-RepPack/test-sites/blob/main/LICENSE).
+This project is licensed under the [MIT License](https://github.com/FrameworkBench-RepPack/benchmark-runner/blob/main/LICENSE).

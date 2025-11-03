@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "A program for running energy consumption benchmarks on several different websites",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "bm": "tsx src/index.ts"
   },
@@ -11,7 +11,6 @@
     "type": "git",
     "url": "git+https://github.com/FrameworkBench-RepPack/benchmark-runner.git"
   },
-  "author": "",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/FrameworkBench-RepPack/benchmark-runner/issues"
