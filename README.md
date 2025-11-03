@@ -46,3 +46,6 @@ Options:
                                ["GeckoMain"])
   -h, --help                   display help for command
 ```
+
+## License
+This project is licensed under the [MIT License](https://github.com/FrameworkBench-RepPack/test-sites/blob/main/LICENSE).
