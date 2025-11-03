@@ -84,7 +84,7 @@ export async function buildWebDriver(
 
   // Configure service builder - Geckodriver handler
   const serviceBuilder = new ServiceBuilder(
-    path.join(__dirname, `../../geckodriver/${paths.geckodriverPath}`)
+    path.join(process.cwd(), `/geckodriver/${paths.geckodriverPath}`)
   );
 
   serviceBuilder.addArguments("--allow-system-access");

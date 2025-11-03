@@ -22,9 +22,11 @@ export default async function startBenchmark(
   port: number
 ) {
   const frameworks = await getFrameworks();
+  console.log("BingBong");
 
   /** Loop through every framework and perform the benchmark */
   for (const framework of frameworks) {
+    if (framework !== "svelte-astro") continue;
     const workerData: WorkerData = {
       port,
       framework,
@@ -57,6 +59,10 @@ export default async function startBenchmark(
       profilerOptions,
     };
 
-    // await benchmarkStatic(benchmarkInput);
+    await benchmarkStatic(benchmarkInput);
+    console.log("Finished testing and quit browser instance");
+
+    // Terminate server
+    await worker.terminate();
   }
 }

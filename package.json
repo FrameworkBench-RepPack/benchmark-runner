@@ -17,6 +17,7 @@
     "url": "https://github.com/FrameworkBench-RepPack/benchmark-runner/issues"
   },
   "homepage": "https://github.com/FrameworkBench-RepPack/benchmark-runner#readme",
+  "workspaces": ["test-sites", "test-sites/sites/*"],
   "devDependencies": {
     "@types/node": "^24.9.1",
     "@types/selenium-webdriver": "^4.35.2",
@@ -25,6 +26,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "selenium-webdriver": "^4.37.0"
+    "selenium-webdriver": "^4.37.0",
+    "test-sites": "*"
   }
 }

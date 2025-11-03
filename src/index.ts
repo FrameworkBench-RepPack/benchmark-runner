@@ -8,7 +8,7 @@ import {
 } from "./utilities/browser-utilities/profiler-helper";
 import startBenchmark from "./utilities/benchmark-runner";
 
-const TEST_SITES_PATH = "./node_modules/test-sites/" as const;
+const TEST_SITES_PATH = "./test-sites/" as const;
 
 let serverPort = 1337;
 const profilerOptions: ProfilerOptions = {

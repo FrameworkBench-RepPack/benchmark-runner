@@ -1,12 +1,12 @@
 import path from "path";
+import { until } from "selenium-webdriver";
 import { Driver } from "selenium-webdriver/firefox";
 import { buildWebDriver } from "./browser-utilities/driver-builder";
 import ProfilerHandler, {
   ProfilerOptions,
 } from "./browser-utilities/profiler-helper";
 
-// Configure service builder - Geckodriver handler
-const RESULTS_PATH = path.resolve(__dirname, "../profiler-results/");
+const RESULTS_PATH = path.resolve(process.cwd(), "profiler-results");
 
 export async function profilerWrapper(
   benchmarkName: string,
@@ -41,6 +41,31 @@ export async function profilerWrapper(
     // Clean up after the test
     if (afterBM) await afterBM(driver);
   } finally {
-    await driver.quit();
+    // Always quit safely
+    try {
+      await driver.quit();
+    } catch (quitErr) {
+      // Ignore session errors on quit
+      if (
+        quitErr instanceof Error &&
+        !quitErr.message.includes("NoSuchSessionError")
+      ) {
+        console.error("Error quitting driver:", quitErr);
+      }
+    }
   }
+}
+
+export async function prepareBrowser(driver: Driver) {
+  await driver.manage().window().fullscreen();
+}
+
+export async function openPageAndWait(
+  driver: Driver,
+  link: string,
+  title: string
+) {
+  await driver.navigate().to(link);
+  await driver.wait(until.titleIs(title), 10000);
+  console.log(`Expected: ${title}, Actual: ${await driver.getTitle()}`);
 }
