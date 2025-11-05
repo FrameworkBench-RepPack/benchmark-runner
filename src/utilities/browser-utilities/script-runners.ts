@@ -13,17 +13,10 @@ export async function runScript(
   script: string,
   ...args: any[]
 ): Promise<string | undefined> {
-  console.log(`Executing script "${name}": \n${script}`);
-
   try {
     const result = await driver.executeScript(script, args);
 
-    if (typeof result !== "string") {
-      console.error(`Script ${name} does not return a value of type string`);
-      return undefined;
-    }
-
-    return result;
+    return typeof result === "string" ? result : undefined;
   } catch (error) {
     console.error(`Couldn't execute script named ${name}. Error:`, error);
     throw error;
@@ -75,17 +68,10 @@ export async function runScriptAsync(
   script: string,
   ...args: any[]
 ): Promise<string | undefined> {
-  console.log(`Executing async script "${name}": \n${script}`);
-
   try {
     const result = await driver.executeAsyncScript(script, args);
 
-    if (typeof result !== "string") {
-      console.error(`Script ${name} does not return a value of type string`);
-      return undefined;
-    }
-
-    return result;
+    return typeof result === "string" ? result : undefined;
   } catch (error) {
     console.error(`Couldn't execute script named ${name}. Error:`, error);
     throw error;

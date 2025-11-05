@@ -4,7 +4,6 @@ import {
   openPageAndWait,
   prepareBrowser,
   profilerWrapper,
-  promisifiedTimeout,
   scrollToElement,
   simulateClick,
 } from "../utilities/benchmark-utilities";
