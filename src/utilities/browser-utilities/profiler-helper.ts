@@ -98,26 +98,27 @@ export default class ProfilerHandler {
   }
 
   async start(options: ProfilerOptions) {
+    console.log(this.#startScript(options));
     await runScriptInChrome(
+      "PROFILER-START",
       this.#driver,
-      this.#startScript(options),
-      "PROFILER-START"
+      this.#startScript(options)
     );
   }
 
   async end(filePath: string) {
     await runScriptInChrome(
+      "PROFILER-PAUSE",
       this.#driver,
-      this.#pauseScript(),
-      "PROFILER-PAUSE"
+      this.#pauseScript()
     );
 
     await runScriptInChromeAsync(
+      "PROFILER-COLLECT-DATA",
       this.#driver,
-      this.#collectDataScript(filePath),
-      "PROFILER-COLLECT-DATA"
+      this.#collectDataScript(filePath)
     );
 
-    await runScriptInChrome(this.#driver, this.#endScript(), "PROFILER-END");
+    await runScriptInChrome("PROFILER-END", this.#driver, this.#endScript());
   }
 }

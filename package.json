@@ -12,6 +12,9 @@
     "url": "git+https://github.com/FrameworkBench-RepPack/benchmark-runner.git"
   },
   "license": "MIT",
+  "engines": {
+    "node": ">=24.11.0"
+  },
   "bugs": {
     "url": "https://github.com/FrameworkBench-RepPack/benchmark-runner/issues"
   },

@@ -8,14 +8,15 @@ import { Driver, Context } from "selenium-webdriver/firefox";
  * @returns The returned value of the script
  */
 export async function runScript(
+  name: string,
   driver: Driver,
   script: string,
-  name: string
+  ...args: any[]
 ): Promise<string | undefined> {
   console.log(`Executing script "${name}": \n${script}`);
 
   try {
-    const result = await driver.executeScript(script);
+    const result = await driver.executeScript(script, args);
 
     if (typeof result !== "string") {
       console.error(`Script ${name} does not return a value of type string`);
@@ -38,15 +39,16 @@ export async function runScript(
  * @returns The returned value of the script
  */
 export async function runScriptInChrome(
+  name: string,
   driver: Driver,
   script: string,
-  name: string
+  ...args: any[]
 ): Promise<string | undefined> {
   const prevContext = await driver.getContext();
 
   try {
     await driver.setContext(Context.CHROME);
-    const result = await runScript(driver, script, name);
+    const result = await runScript(name, driver, script, args);
     await driver.setContext(prevContext);
     return result;
   } catch (error) {
@@ -68,14 +70,15 @@ export async function runScriptInChrome(
  * @returns The returned value of the script
  */
 export async function runScriptAsync(
+  name: string,
   driver: Driver,
   script: string,
-  name: string
+  ...args: any[]
 ): Promise<string | undefined> {
   console.log(`Executing async script "${name}": \n${script}`);
 
   try {
-    const result = await driver.executeAsyncScript(script);
+    const result = await driver.executeAsyncScript(script, args);
 
     if (typeof result !== "string") {
       console.error(`Script ${name} does not return a value of type string`);
@@ -97,15 +100,16 @@ export async function runScriptAsync(
  * @returns The returned value of the script
  */
 export async function runScriptInChromeAsync(
+  name: string,
   driver: Driver,
   script: string,
-  name: string
+  ...args: any[]
 ): Promise<string | undefined> {
   const prevContext = await driver.getContext();
 
   try {
     await driver.setContext(Context.CHROME);
-    const result = await runScriptAsync(driver, script, name);
+    const result = await runScriptAsync(name, driver, script, args);
     await driver.setContext(prevContext);
     return result;
   } catch (error) {

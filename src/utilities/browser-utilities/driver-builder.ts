@@ -57,7 +57,7 @@ function validateExecutables(): {
   return { firefoxPath, geckodriverPath };
 }
 
-type BuilderOptions = {
+export type BuilderOptions = {
   headless: boolean;
   debug: boolean;
   env: [string, string][];
@@ -112,6 +112,12 @@ export async function buildWebDriver(
   for (const [key, val] of options.env) {
     process.env[key] = val;
   }
+
+  // Set Caching preferences
+  browserOptions.setPreference("browser.cache.disk.enable", false);
+  browserOptions.setPreference("browser.cache.memory.enable", true);
+  browserOptions.setPreference("browser.cache.memory.enable", false);
+  browserOptions.setPreference("network.http.use-cache", true);
 
   builder.setFirefoxOptions(browserOptions);
 

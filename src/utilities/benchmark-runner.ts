@@ -1,13 +1,13 @@
 import path from "node:path";
 import { Worker } from "worker_threads";
-import { ProfilerOptions } from "./browser-utilities/profiler-helper";
-import { listSites as getFrameworks } from "test-sites/listSites.ts";
-
+import { InputOptions } from "../index";
 import { MessageType, WorkerData } from "./server-worker/worker-types";
-import { benchmarkStatic } from "../benchmarks/static-site";
 import BenchmarkInput from "../benchmarks/benchmark-types";
 
-const serverWorkerPath = path.resolve(
+import { listSites as getFrameworks } from "test-sites/listSites.ts";
+import { loadBenchmarks } from "./benchmark-file-helper";
+
+const SERVER_WORKER_PATH = path.resolve(
   import.meta.dirname,
   "./server-worker/worker.ts"
 );
@@ -17,22 +17,17 @@ const serverWorkerPath = path.resolve(
  * @param options Profiler options for the firefox profiler
  * @param port The port to be used to host each framework
  */
-export default async function startBenchmark(
-  profilerOptions: ProfilerOptions,
-  port: number
-) {
-  const frameworks = await getFrameworks();
-  console.log("BingBong");
+export default async function startBenchmark(options: InputOptions) {
+  const frameworks = options.chosenFrameworks || (await getFrameworks());
 
   /** Loop through every framework and perform the benchmark */
   for (const framework of frameworks) {
-    if (framework !== "svelte-astro") continue;
     const workerData: WorkerData = {
-      port,
+      port: options.serverPort,
       framework,
     };
 
-    const worker = new Worker(serverWorkerPath, {
+    const worker = new Worker(SERVER_WORKER_PATH, {
       workerData: workerData,
     });
 
@@ -55,11 +50,19 @@ export default async function startBenchmark(
 
     const benchmarkInput: BenchmarkInput = {
       framework,
-      link: `http://localhost:${port}`,
-      profilerOptions,
+      link: `http://localhost:${options.serverPort}`,
+      profilerOptions: options.profilerOptions,
     };
 
-    await benchmarkStatic(benchmarkInput);
+    // Perform select benchmark
+    const benchmarks = await loadBenchmarks(
+      options.benchmarksPath,
+      options.chosenBenchmarks
+    );
+    for (const benchmark of benchmarks) {
+      await benchmark(benchmarkInput);
+    }
+
     console.log("Finished testing and quit browser instance");
 
     // Terminate server
