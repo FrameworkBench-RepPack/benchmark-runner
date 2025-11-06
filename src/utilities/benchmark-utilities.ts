@@ -1,5 +1,4 @@
-import path from "path";
-import { until, WebElement } from "selenium-webdriver";
+import { WebElement } from "selenium-webdriver";
 import { Driver } from "selenium-webdriver/firefox";
 import {
   BuilderOptions,
@@ -10,8 +9,6 @@ import ProfilerHandler, {
 } from "./browser-utilities/profiler-helper";
 import { runScript } from "./browser-utilities/script-runners";
 
-const RESULTS_PATH = path.resolve(process.cwd(), "profiler-results");
-
 interface ProfilerWrapperOptions {
   /** Name of the benchmark */
   benchmarkName: string;
@@ -21,6 +18,9 @@ interface ProfilerWrapperOptions {
 
   /** Current repetition */
   repetition: number;
+
+  /** Results path */
+  resultsPath: string;
 
   /** options for the profiler */
   profilerOptions: ProfilerOptions;
@@ -74,7 +74,7 @@ export async function profilerWrapper(input: ProfilerWrapperOptions) {
 
     // Stop profiler and store data
     await profilerHandler.end(
-      `${RESULTS_PATH}/${input.framework}-${input.benchmarkName}-${input.repetition}.json`
+      `${input.resultsPath}/${input.framework}-${input.benchmarkName}-${input.repetition}.json`
     );
 
     // Clean up after the test

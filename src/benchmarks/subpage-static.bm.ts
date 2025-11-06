@@ -35,10 +35,8 @@ export default async function benchmark(options: BenchmarkInput) {
   };
 
   await profilerWrapper({
+    ...options,
     benchmarkName: BENCHMARK_NAME,
-    framework: options.framework,
-    repetition: options.repetition,
-    profilerOptions: options.profilerOptions,
     performBM: performTest,
     beforeBM: prepareTest,
   });

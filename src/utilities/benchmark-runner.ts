@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import path from "node:path";
 import { Worker } from "worker_threads";
 import { InputOptions } from "../index";
@@ -12,12 +13,18 @@ const SERVER_WORKER_PATH = path.resolve(
   "./server-worker/worker.ts"
 );
 
+const RESULTS_PATH = path.resolve(process.cwd(), "profiler-results");
+
 /**
  * Function to perform the benchmark on each framework
  * @param options Profiler options for the firefox profiler
  * @param port The port to be used to host each framework
  */
 export default async function startBenchmark(options: InputOptions) {
+  /** Make sure the results folder exists */
+  if (!fs.existsSync(RESULTS_PATH)) fs.mkdirSync(RESULTS_PATH);
+
+  /** Determine frameworks to be benchmarked */
   const frameworks = options.chosenFrameworks || (await getFrameworks());
 
   /** Loop through every repetitions */
@@ -53,6 +60,7 @@ export default async function startBenchmark(options: InputOptions) {
       const benchmarkInput: BenchmarkInput = {
         framework,
         repetition,
+        resultsPath: RESULTS_PATH,
         link: `http://localhost:${options.serverPort}`,
         profilerOptions: options.profilerOptions,
       };
