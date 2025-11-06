@@ -20,52 +20,56 @@ const SERVER_WORKER_PATH = path.resolve(
 export default async function startBenchmark(options: InputOptions) {
   const frameworks = options.chosenFrameworks || (await getFrameworks());
 
-  /** Loop through every framework and perform the benchmark */
-  for (const framework of frameworks) {
-    const workerData: WorkerData = {
-      port: options.serverPort,
-      framework,
-    };
+  /** Loop through every repetitions */
+  for (let repetition = 1; repetition <= options.repetitions; repetition++) {
+    /** Loop through every framework and perform the benchmark */
+    for (const framework of frameworks) {
+      const workerData: WorkerData = {
+        port: options.serverPort,
+        framework,
+      };
 
-    const worker = new Worker(SERVER_WORKER_PATH, {
-      workerData: workerData,
-    });
-
-    // Register an error listener to quit the benchmark if an error occurs on the server
-    worker.on("error", (error) => {
-      console.error("Server worker thread threw an error - Stopping");
-      console.log(error);
-      throw error;
-    });
-
-    // Wait for the server to be ready
-    await new Promise<void>((resolve, _) => {
-      worker.on("message", (message) => {
-        if (message?.type === MessageType.Ready) {
-          console.log(message.payload);
-          resolve();
-        }
+      const worker = new Worker(SERVER_WORKER_PATH, {
+        workerData: workerData,
       });
-    });
 
-    const benchmarkInput: BenchmarkInput = {
-      framework,
-      link: `http://localhost:${options.serverPort}`,
-      profilerOptions: options.profilerOptions,
-    };
+      // Register an error listener to quit the benchmark if an error occurs on the server
+      worker.on("error", (error) => {
+        console.error("Server worker thread threw an error - Stopping");
+        console.log(error);
+        throw error;
+      });
 
-    // Perform select benchmark
-    const benchmarks = await loadBenchmarks(
-      options.benchmarksPath,
-      options.chosenBenchmarks
-    );
-    for (const benchmark of benchmarks) {
-      await benchmark(benchmarkInput);
+      // Wait for the server to be ready
+      await new Promise<void>((resolve, _) => {
+        worker.on("message", (message) => {
+          if (message?.type === MessageType.Ready) {
+            console.log(message.payload);
+            resolve();
+          }
+        });
+      });
+
+      const benchmarkInput: BenchmarkInput = {
+        framework,
+        repetition,
+        link: `http://localhost:${options.serverPort}`,
+        profilerOptions: options.profilerOptions,
+      };
+
+      // Perform select benchmark
+      const benchmarks = await loadBenchmarks(
+        options.benchmarksPath,
+        options.chosenBenchmarks
+      );
+      for (const benchmark of benchmarks) {
+        await benchmark(benchmarkInput);
+      }
+
+      console.log("Finished testing and quit browser instance");
+
+      // Terminate server
+      await worker.terminate();
     }
-
-    console.log("Finished testing and quit browser instance");
-
-    // Terminate server
-    await worker.terminate();
   }
 }

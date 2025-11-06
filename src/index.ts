@@ -21,6 +21,7 @@ const BENCHMARKS_PATH = path.resolve(import.meta.dirname, "./benchmarks/");
 export type InputOptions = {
   serverPort: number;
   profilerOptions: ProfilerOptions;
+  repetitions: number;
   chosenBenchmarks: string[] | undefined;
   chosenFrameworks: string[] | undefined;
   benchmarksPath: string;
@@ -34,6 +35,7 @@ const inputOptions: InputOptions = {
     features: [],
     threads: [],
   },
+  repetitions: 0,
   chosenBenchmarks: undefined,
   chosenFrameworks: undefined,
   benchmarksPath: BENCHMARKS_PATH,
@@ -50,28 +52,33 @@ const program = new Command();
     .version("1.0.0")
     .option("-p, --port", "specify port used for serving the websites", "1337")
     .option(
-      "--setEntries <entries>",
+      "--entries <entries>",
       "specify the buffer size used in the profiler",
       "20000000"
     )
     .option(
-      "--setInterval <interval>",
-      "specify the logging interval (ms)",
+      "--interval <interval>",
+      "specify the profiler logging interval (ms)",
       "100"
     )
     .option(
-      "--setFeatures <features...>",
+      "--features <features...>",
       `specify the logged features. Available features: ${Object.values(
         ProfilerFeatures
       ).join(", ")}`,
       ["power"]
     )
     .option(
-      "--setThreads <threads...>",
+      "--threads <threads...>",
       `specify the logged threads. Available threads: ${Object.values(
         ProfilerThreads
       ).join(", ")}`,
       ["GeckoMain"]
+    )
+    .option(
+      "--repetitions <repetitions...>",
+      `specify the number of test repetitions`,
+      "1"
     )
     .option(
       "--benchmarks <benchmarks...>",
@@ -100,35 +107,35 @@ const program = new Command();
   }
 
   /** Handle entries flag */
-  if (options.setEntries) {
-    const entries = Number.parseInt(options.setEntries);
+  if (options.entries) {
+    const entries = Number.parseInt(options.entries);
 
     if (Number.isNaN(entries))
       throw new Error(
-        `"${options.setEntries}" is not a valid buffer size - is not an integer`
+        `"${options.entries}" is not a valid buffer size - is not an integer`
       );
 
     if (entries <= 0)
       throw new Error(
-        `"${options.setEntries}" is not a valid buffer size - must be larger than 0`
+        `"${options.entries}" is not a valid buffer size - must be larger than 0`
       );
 
     inputOptions.profilerOptions.entries = entries;
   }
 
   /** Handle interval flag */
-  if (options.setInterval) {
-    const interval = Number.parseInt(options.setInterval);
+  if (options.interval) {
+    const interval = Number.parseInt(options.interval);
 
     if (Number.isNaN(interval)) {
       throw new Error(
-        `"${options.setInterval}" is not a valid interval - is not an integer`
+        `"${options.interval}" is not a valid interval - is not an integer`
       );
     }
 
     if (interval <= 0)
       throw new Error(
-        `"${options.setInterval}" is not a valid interval - must be larger than 0`
+        `"${options.interval}" is not a valid interval - must be larger than 0`
       );
 
     inputOptions.profilerOptions.interval = interval;
@@ -139,8 +146,8 @@ const program = new Command();
   }
 
   /** Handle features flag */
-  if (options.setFeatures) {
-    const features = options.setFeatures;
+  if (options.features) {
+    const features = options.features;
     if (!Array.isArray(features)) {
       throw new Error(`"${features}" is not an array`);
     }
@@ -157,8 +164,8 @@ const program = new Command();
   }
 
   /** Handle threads flag */
-  if (options.setThreads) {
-    const threads = options.setThreads;
+  if (options.threads) {
+    const threads = options.threads;
     if (!Array.isArray(threads)) {
       throw new Error(`"${threads}" is not an array`);
     }
@@ -168,6 +175,24 @@ const program = new Command();
     }
 
     inputOptions.profilerOptions.threads = threads;
+  }
+
+  /** Handle repetitions flag */
+  if (options.repetitions) {
+    const repetitions = Number.parseInt(options.repetitions);
+
+    if (Number.isNaN(repetitions)) {
+      throw new Error(
+        `"${options.repetitions}" is not a valid repetition count - is not an integer`
+      );
+    }
+
+    if (repetitions <= 0)
+      throw new Error(
+        `"${options.repetitions}" is not a valid repetition count - must be larger than 0`
+      );
+
+    inputOptions.repetitions = repetitions;
   }
 
   /** Handle benchmarks flag */

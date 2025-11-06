@@ -19,6 +19,9 @@ interface ProfilerWrapperOptions {
   /** Framework to be tested */
   framework: string;
 
+  /** Current repetition */
+  repetition: number;
+
   /** options for the profiler */
   profilerOptions: ProfilerOptions;
 
@@ -71,7 +74,7 @@ export async function profilerWrapper(input: ProfilerWrapperOptions) {
 
     // Stop profiler and store data
     await profilerHandler.end(
-      `${RESULTS_PATH}/${input.framework}-${input.benchmarkName}.json`
+      `${RESULTS_PATH}/${input.framework}-${input.benchmarkName}-${input.repetition}.json`
     );
 
     // Clean up after the test
