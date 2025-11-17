@@ -30,7 +30,7 @@ export default async function startBenchmark(options: InputOptions) {
   /** Loop through every repetitions */
   for (let repetition = 1; repetition <= options.repetitions; repetition++) {
     /** Loop through every framework and perform the benchmark */
-    for (const framework of frameworks) {
+    for (const [frameworkIndex, framework] of frameworks.entries()) {
       const workerData: WorkerData = {
         port: options.serverPort,
         framework,
@@ -70,7 +70,8 @@ export default async function startBenchmark(options: InputOptions) {
         options.benchmarksPath,
         options.chosenBenchmarks
       );
-      for (const benchmark of benchmarks) {
+      for (const [benchmarkIndex, [benchmarkName, benchmark]] of benchmarks.entries()) {
+        console.log(`Benchmarking ${framework} with ${benchmarkName}.. (benchmark ${benchmarkIndex+1}/${benchmarks.length}) (framework ${frameworkIndex+1}/${frameworks.length}) (repetition ${repetition}/${options.repetitions})`);
         await benchmark(benchmarkInput);
       }
 
