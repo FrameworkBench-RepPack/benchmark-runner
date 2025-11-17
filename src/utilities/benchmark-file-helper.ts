@@ -2,12 +2,22 @@ import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "url";
 
+// The postfix used for benchmark files
+const BENCHMARK_FILE_EXTENSION = ".bm.ts";
+
+function addBenchmarkExtension(path: string): string {
+  return `${path}${BENCHMARK_FILE_EXTENSION}`;
+}
+function removeBenchmarkExtension(path: string): string {
+  return path.replace(BENCHMARK_FILE_EXTENSION, "");
+}
+
 async function loadAndMapFiles<T>(
   dir: string,
   mappingFunc: (_: [fileName: string, file: any]) => T,
   fileFilter?: (fileName: string) => boolean
 ) {
-  let files = fs.readdirSync(dir).filter((f) => f.endsWith(".bm.ts"));
+  let files = fs.readdirSync(dir).filter((f) => f.endsWith(BENCHMARK_FILE_EXTENSION));
 
   // Filter files if relevant
   if (fileFilter) files = files.filter(fileFilter);
@@ -30,22 +40,22 @@ async function loadAndMapFiles<T>(
  * @param benchmarks Optional list of benchmarks to import
  * @returns Default functions exported by the given benchmarks
  */
-export async function loadBenchmarks(dir: string, benchmarks?: string[]) {
+export async function loadBenchmarks(dir: string, benchmarks?: string[]): Promise<[string, Function][]> {
   // Create filter function if necessary
   const filterFunction = benchmarks
-    ? (bmName: string) => benchmarks.includes(bmName.replace(".bm.ts", ""))
+    ? (bmName: string) => benchmarks.includes(removeBenchmarkExtension(bmName))
     : undefined;
 
   // Import filtered benchmarks and make sure they export a default function
   const importedBenchmarks = await loadAndMapFiles(
     dir,
-    ([_, importedFile]) => importedFile.default ?? null,
+    ([path, importedFile]) => [removeBenchmarkExtension(path), importedFile.default ?? null],
     filterFunction
   );
 
   // Return the functions
   return importedBenchmarks.filter(
-    (bm): bm is Function => typeof bm === "function"
+    (bm): bm is [string, Function] => typeof bm[1] === "function"
   );
 }
 
@@ -58,7 +68,7 @@ export async function getBenchmarkNames(dir: string) {
   // Get names of benchmarks
   const benchmarks = await loadAndMapFiles(dir, ([file, importedFile]) =>
     typeof importedFile.default === "function"
-      ? file.replace(".bm.ts", "")
+      ? removeBenchmarkExtension(file)
       : null
   );
 
@@ -75,7 +85,7 @@ export async function validateBenchmarks(dir: string, benchmarks: string[]) {
   // Import and process all benchmarks
   const benchmarkChecks = await Promise.all(
     benchmarks.map(async (bm) => {
-      const fileUrl = pathToFileURL(path.join(dir, `${bm}.bm.ts`)).href;
+      const fileUrl = pathToFileURL(path.join(dir, addBenchmarkExtension(bm))).href;
       const importedFile = await import(fileUrl);
       return typeof importedFile.default === "function" ? true : false;
     })
