@@ -15,9 +15,11 @@ function removeBenchmarkExtension(path: string): string {
 async function loadAndMapFiles<T>(
   dir: string,
   mappingFunc: (_: [fileName: string, file: any]) => T,
-  fileFilter?: (fileName: string) => boolean
+  fileFilter?: (fileName: string) => boolean,
 ) {
-  let files = fs.readdirSync(dir).filter((f) => f.endsWith(BENCHMARK_FILE_EXTENSION));
+  let files = fs
+    .readdirSync(dir)
+    .filter((f) => f.endsWith(BENCHMARK_FILE_EXTENSION));
 
   // Filter files if relevant
   if (fileFilter) files = files.filter(fileFilter);
@@ -28,7 +30,7 @@ async function loadAndMapFiles<T>(
       const fileUrl = pathToFileURL(path.join(dir, file)).href;
       const importedFile = await import(fileUrl);
       return mappingFunc([file, importedFile]);
-    })
+    }),
   );
 
   return mappedFiles;
@@ -40,7 +42,10 @@ async function loadAndMapFiles<T>(
  * @param benchmarks Optional list of benchmarks to import
  * @returns Default functions exported by the given benchmarks
  */
-export async function loadBenchmarks(dir: string, benchmarks?: string[]): Promise<[string, Function][]> {
+export async function loadBenchmarks(
+  dir: string,
+  benchmarks?: string[],
+): Promise<[string, Function][]> {
   // Create filter function if necessary
   const filterFunction = benchmarks
     ? (bmName: string) => benchmarks.includes(removeBenchmarkExtension(bmName))
@@ -49,13 +54,16 @@ export async function loadBenchmarks(dir: string, benchmarks?: string[]): Promis
   // Import filtered benchmarks and make sure they export a default function
   const importedBenchmarks = await loadAndMapFiles(
     dir,
-    ([path, importedFile]) => [removeBenchmarkExtension(path), importedFile.default ?? null],
-    filterFunction
+    ([path, importedFile]) => [
+      removeBenchmarkExtension(path),
+      importedFile.default ?? null,
+    ],
+    filterFunction,
   );
 
   // Return the functions
   return importedBenchmarks.filter(
-    (bm): bm is [string, Function] => typeof bm[1] === "function"
+    (bm): bm is [string, Function] => typeof bm[1] === "function",
   );
 }
 
@@ -69,7 +77,7 @@ export async function getBenchmarkNames(dir: string) {
   const benchmarks = await loadAndMapFiles(dir, ([file, importedFile]) =>
     typeof importedFile.default === "function"
       ? removeBenchmarkExtension(file)
-      : null
+      : null,
   );
 
   // Return non-null entries
@@ -85,10 +93,12 @@ export async function validateBenchmarks(dir: string, benchmarks: string[]) {
   // Import and process all benchmarks
   const benchmarkChecks = await Promise.all(
     benchmarks.map(async (bm) => {
-      const fileUrl = pathToFileURL(path.join(dir, addBenchmarkExtension(bm))).href;
+      const fileUrl = pathToFileURL(
+        path.join(dir, addBenchmarkExtension(bm)),
+      ).href;
       const importedFile = await import(fileUrl);
       return typeof importedFile.default === "function" ? true : false;
-    })
+    }),
   );
 
   return !benchmarkChecks.includes(false);

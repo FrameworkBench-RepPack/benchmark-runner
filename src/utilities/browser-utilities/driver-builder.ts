@@ -45,12 +45,12 @@ function validateExecutables(): {
   const geckodriverPath = geckodriverPlatform[architecture];
   if (!geckodriverPath)
     throw new Error(
-      `No geckodriver defined for platform: ${platform}, architecture: ${architecture}`
+      `No geckodriver defined for platform: ${platform}, architecture: ${architecture}`,
     );
 
   if (!(platform === "darwin" && architecture === "arm64")) {
     console.warn(
-      "WARNING: This combination of platform and architecture does not support per-process power measurements in Firefox."
+      "WARNING: This combination of platform and architecture does not support per-process power measurements in Firefox.",
     );
   }
 
@@ -70,7 +70,7 @@ const defaultSettings: BuilderOptions = {
 } as const;
 
 export async function buildWebDriver(
-  options: BuilderOptions = defaultSettings
+  options: BuilderOptions = defaultSettings,
 ): Promise<Driver | undefined> {
   const browserOptions = new Options();
   const capabilities = Capabilities.firefox();
@@ -84,7 +84,7 @@ export async function buildWebDriver(
 
   // Configure service builder - Geckodriver handler
   const serviceBuilder = new ServiceBuilder(
-    path.join(process.cwd(), `/geckodriver/${paths.geckodriverPath}`)
+    path.join(process.cwd(), `/geckodriver/${paths.geckodriverPath}`),
   );
 
   serviceBuilder.addArguments("--allow-system-access");

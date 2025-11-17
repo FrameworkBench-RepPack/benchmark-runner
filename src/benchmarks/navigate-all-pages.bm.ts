@@ -20,12 +20,12 @@ async function scrollAndNavigate(driver: Driver, hrefSelector: string) {
   // Scroll to footer and open second static page
   await scrollToElement(driver, "footer");
   const firstFooterLink = await driver.findElement(
-    By.css(`footer a[href*="${hrefSelector}"]`)
+    By.css(`footer a[href*="${hrefSelector}"]`),
   );
   await simulateClick(
     driver,
     firstFooterLink,
-    async () => await promisifiedTimeout(1000)
+    async () => await promisifiedTimeout(1000),
   );
 }
 

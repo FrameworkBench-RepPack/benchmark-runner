@@ -74,7 +74,7 @@ export async function profilerWrapper(input: ProfilerWrapperOptions) {
 
     // Stop profiler and store data
     await profilerHandler.end(
-      `${input.resultsPath}/${input.framework}_${input.benchmarkName}_${input.repetition}.json`
+      `${input.resultsPath}/${input.framework}_${input.benchmarkName}_${input.repetition}.json`,
     );
 
     // Clean up after the test
@@ -127,7 +127,7 @@ interface openPageAndWaitInput {
 export async function openPageAndWait(
   driver: Driver,
   link: string,
-  waitFunc: () => Promise<void>
+  waitFunc: () => Promise<void>,
 ) {
   await driver.navigate().to(link);
   await waitFunc();
@@ -141,7 +141,7 @@ export async function openPageAndWait(
 export async function scrollToElement(
   driver: Driver,
   querySelector: string,
-  elementIndex?: number
+  elementIndex?: number,
 ) {
   const script = `
     const elem = ${elementIndex ? `document.querySelectorAll(arguments[0])[${elementIndex}];` : `document.querySelector(arguments[0]);`}
@@ -163,7 +163,7 @@ export async function scrollToElement(
 export async function simulateClick(
   driver: Driver,
   element: WebElement,
-  waitFunc?: () => Promise<void>
+  waitFunc?: () => Promise<void>,
 ) {
   // Hover over element before clicking
   await driver

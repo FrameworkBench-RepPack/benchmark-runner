@@ -38,7 +38,7 @@ export default async function benchmark(options: BenchmarkInput) {
 
     /** Age Input Field */
     const ageToElement = await driver.findElement(
-      By.css(`input[name="age-to"]`)
+      By.css(`input[name="age-to"]`),
     );
 
     for (let maxAge = 100; maxAge > 0; maxAge -= 10) {
@@ -53,7 +53,7 @@ export default async function benchmark(options: BenchmarkInput) {
 
     /** Category Input Fields */
     const categoryInputElements = await driver.findElements(
-      By.css(`input[name="category"]`)
+      By.css(`input[name="category"]`),
     );
 
     // Disable all categories
@@ -61,7 +61,7 @@ export default async function benchmark(options: BenchmarkInput) {
       await simulateClick(
         driver,
         element,
-        async () => await promisifiedTimeout(1000)
+        async () => await promisifiedTimeout(1000),
       );
     }
 
@@ -74,14 +74,14 @@ export default async function benchmark(options: BenchmarkInput) {
       await simulateClick(
         driver,
         checkbox,
-        async () => await promisifiedTimeout(500)
+        async () => await promisifiedTimeout(500),
       );
 
       // Disable the category
       await simulateClick(
         driver,
         checkbox,
-        async () => await promisifiedTimeout(500)
+        async () => await promisifiedTimeout(500),
       );
     }
   };

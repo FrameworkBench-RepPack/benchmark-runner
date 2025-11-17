@@ -102,7 +102,7 @@ export default class ProfilerHandler {
     await runScriptInChrome(
       "PROFILER-START",
       this.#driver,
-      this.#startScript(options)
+      this.#startScript(options),
     );
   }
 
@@ -110,13 +110,13 @@ export default class ProfilerHandler {
     await runScriptInChrome(
       "PROFILER-PAUSE",
       this.#driver,
-      this.#pauseScript()
+      this.#pauseScript(),
     );
 
     await runScriptInChromeAsync(
       "PROFILER-COLLECT-DATA",
       this.#driver,
-      this.#collectDataScript(filePath)
+      this.#collectDataScript(filePath),
     );
 
     await runScriptInChrome("PROFILER-END", this.#driver, this.#endScript());

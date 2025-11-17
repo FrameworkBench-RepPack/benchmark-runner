@@ -5,7 +5,8 @@
   "description": "A program for running energy consumption benchmarks on several different websites",
   "main": "index.ts",
   "scripts": {
-    "bm": "tsx src/index.ts"
+    "bm": "tsx src/index.ts",
+    "format": "prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -19,11 +20,15 @@
     "url": "https://github.com/FrameworkBench-RepPack/benchmark-runner/issues"
   },
   "homepage": "https://github.com/FrameworkBench-RepPack/benchmark-runner#readme",
-  "workspaces": ["test-sites", "test-sites/sites/*"],
+  "workspaces": [
+    "test-sites",
+    "test-sites/sites/*"
+  ],
   "devDependencies": {
     "@types/node": "^24.9.1",
     "@types/selenium-webdriver": "^4.35.2",
     "commander": "^14.0.2",
+    "prettier": "^3.6.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   },
