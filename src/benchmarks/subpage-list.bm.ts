@@ -22,18 +22,12 @@ export default async function benchmark(options: BenchmarkInput) {
       await driver.wait(until.titleIs("Test site"), 10000);
     });
 
-    // Scroll to list
-    await scrollToElement(driver, "#list");
-
     // Change sorting strategy
     const selectElement = await driver.findElement(By.css(".controls select"));
-    const selectOptionsCount = (await selectElement.findElements(By.css("*")))
-      .length;
-
     const selectInstance = new Select(selectElement);
-    for (let i = 0; i > selectOptionsCount; i++) {
-      await selectInstance.selectByIndex(i % selectOptionsCount); // Restore initial category
-      await promisifiedTimeout(1000);
+    for (const index of [1, 2, 0]) {
+      await selectInstance.selectByIndex(index);
+      await promisifiedTimeout(800);
     }
 
     /** Age Input Field */
@@ -41,10 +35,10 @@ export default async function benchmark(options: BenchmarkInput) {
       By.css(`input[name="age-to"]`),
     );
 
-    for (let maxAge = 100; maxAge > 0; maxAge -= 10) {
+    for (const maxAge of [70, 60, 50, 40, 30, 20, 10, 30, 40, 50, 60, 70]) {
       await ageToElement.clear();
       await ageToElement.sendKeys(maxAge);
-      await promisifiedTimeout(1000);
+      await promisifiedTimeout(700);
     }
 
     // Reset input
@@ -61,28 +55,17 @@ export default async function benchmark(options: BenchmarkInput) {
       await simulateClick(
         driver,
         element,
-        async () => await promisifiedTimeout(1000),
       );
+      await promisifiedTimeout(200);
     }
 
-    // Enable every category one by one
-    for (let i = 0; i < categoryInputElements.length; i++) {
-      const checkbox = await categoryInputElements[i];
-      if (!checkbox) continue;
-
-      // Enable the category
+    // Enable all categories
+    for (const element of categoryInputElements) {
       await simulateClick(
         driver,
-        checkbox,
-        async () => await promisifiedTimeout(500),
+        element,
       );
-
-      // Disable the category
-      await simulateClick(
-        driver,
-        checkbox,
-        async () => await promisifiedTimeout(500),
-      );
+      await promisifiedTimeout(200);
     }
   };
 
