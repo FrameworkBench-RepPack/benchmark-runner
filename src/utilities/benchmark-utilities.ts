@@ -74,7 +74,7 @@ export async function profilerWrapper(input: ProfilerWrapperOptions) {
 
     // Stop profiler and store data
     await profilerHandler.end(
-      `${input.resultsPath}/${input.framework}_${input.benchmarkName}_${input.repetition}.json`,
+      `${input.resultsPath}/${input.framework}_${input.benchmarkName}_${input.repetition}.json`
     );
 
     // Clean up after the test
@@ -127,10 +127,11 @@ interface openPageAndWaitInput {
 export async function openPageAndWait(
   driver: Driver,
   link: string,
-  waitFunc: () => Promise<void>,
+  waitFunc: () => Promise<void>
 ) {
   await driver.navigate().to(link);
   await waitFunc();
+  await promisifiedTimeout(1000);
 }
 
 /**
@@ -141,7 +142,7 @@ export async function openPageAndWait(
 export async function scrollToElement(
   driver: Driver,
   querySelector: string,
-  elementIndex?: number,
+  elementIndex?: number
 ) {
   const script = `
     const elem = ${elementIndex ? `document.querySelectorAll(arguments[0])[${elementIndex}];` : `document.querySelector(arguments[0]);`}
@@ -155,6 +156,22 @@ export async function scrollToElement(
 }
 
 /**
+ * Scroll to the bottom of the page
+ * @param driver The driver to control the browser instance
+ */
+export async function scrollToBottom(driver: Driver) {
+  const script = `
+    const elem = document.querySelector("body");
+    if (elem) { 
+      elem.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    } else {
+      throw new Error("Selector did not match any element: " + arguments[0]);
+    }`;
+  await runScript("SCROLL-TO-ELEMENT", driver, script);
+  await promisifiedTimeout(1000); // Wait for the scroll to complete
+}
+
+/**
  * Simulate a real click by hovering over the button before clicking.
  * @param driver The driver to control the browser instance
  * @param element Clickable element to be clicked
@@ -163,7 +180,7 @@ export async function scrollToElement(
 export async function simulateClick(
   driver: Driver,
   element: WebElement,
-  waitFunc?: () => Promise<void>,
+  waitFunc?: () => Promise<void>
 ) {
   // Hover over element before clicking
   await driver

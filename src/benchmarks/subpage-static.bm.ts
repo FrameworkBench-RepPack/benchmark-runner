@@ -4,10 +4,13 @@ import {
   openPageAndWait,
   prepareBrowser,
   profilerWrapper,
+  promisifiedTimeout,
+  scrollToBottom,
   scrollToElement,
   simulateClick,
 } from "../utilities/benchmark-utilities";
 import BenchmarkInput from "./benchmark-types";
+import { elementIsVisible } from "selenium-webdriver/lib/until";
 
 const BENCHMARK_NAME = "subpage-static" as const;
 
@@ -22,16 +25,22 @@ export default async function benchmark(options: BenchmarkInput) {
     });
 
     // Scroll to footer and open second static page
-    await scrollToElement(driver, "footer");
+    await scrollToBottom(driver);
     const firstFooterLink = await driver.findElement(
-      By.css(`footer a[href*="/static-2"]`),
+      By.css(`footer a[href*="/static-2"]`)
     );
+    await driver.wait(until.elementIsVisible(firstFooterLink));
     await simulateClick(driver, firstFooterLink);
 
     // Wait for second page to load and scroll to bottom
     const title = await driver.findElement(By.css("main h1"));
     await driver.wait(until.elementIsVisible(title));
-    await scrollToElement(driver, "footer");
+
+    // Wait for the page to fully load
+    await promisifiedTimeout(1000);
+
+    // Scroll to bottom
+    await scrollToBottom(driver);
   };
 
   await profilerWrapper({
