@@ -1,7 +1,6 @@
-import { until } from "selenium-webdriver";
 import { Driver } from "selenium-webdriver/firefox";
 import {
-  openPageAndWait,
+  loadPage,
   prepareBrowser,
   profilerWrapper,
   promisifiedTimeout,
@@ -16,12 +15,10 @@ export default async function benchmark(options: BenchmarkInput) {
   };
 
   const performTest = async (driver: Driver) => {
-    await openPageAndWait(driver, options.link + "/static-1/", async () => {
-      await driver.wait(until.titleIs("Test site"), 10000);
-    });
+    await loadPage(driver, options.link + "/static-1/");
 
-    // Wait for the page to fully load
-    await promisifiedTimeout(2000);
+    // A short visit
+    await promisifiedTimeout(500);
   };
 
   await profilerWrapper({

@@ -1,4 +1,4 @@
-import { WebElement } from "selenium-webdriver";
+import { By, until, WebElement } from "selenium-webdriver";
 import { Driver } from "selenium-webdriver/firefox";
 import {
   BuilderOptions,
@@ -112,26 +112,30 @@ export async function prepareBrowser(driver: Driver) {
   await driver.manage().deleteAllCookies();
 }
 
-interface openPageAndWaitInput {
-  driver: Driver;
-  link: string;
-  waitFunc: () => Promise<void>;
+/**
+ * Navigate to page and wait until the page is loaded.
+ *
+ * Uses the `pageIsLoaded` utility to wait for page load.
+ *
+ * @param driver The driver to control the browser instance
+ * @param link The link that should be navigated to
+ */
+export async function loadPage(driver: Driver, link: string) {
+  await driver.navigate().to(link);
+  await pageIsLoaded(driver);
 }
 
 /**
- * Navigate to page and wait for it bo be loaded
+ * Wait until the page is loaded.
+ *
+ * This will wait for the top of the page's DOM to load, but will not wait for the rest of the page to load,
+ * as it might be lazy-loaded and thus will never load unless it is scrolled into view.
+ *
  * @param driver The driver to control the browser instance
- * @param link The link that should be navigated to
- * @param title The expected title of the page
  */
-export async function openPageAndWait(
-  driver: Driver,
-  link: string,
-  waitFunc: () => Promise<void>,
-) {
-  await driver.navigate().to(link);
-  await waitFunc();
-  await promisifiedTimeout(1000);
+export async function pageIsLoaded(driver: Driver) {
+  await driver.wait(until.elementLocated(By.css("h1")), 10000);
+  await driver.wait(until.elementLocated(By.css("main p")), 10000);
 }
 
 /**
@@ -175,13 +179,8 @@ export async function scrollToBottom(driver: Driver) {
  * Simulate a real click by hovering over the button before clicking.
  * @param driver The driver to control the browser instance
  * @param element Clickable element to be clicked
- * @param waitFunc If provided, await its execution before returning
  */
-export async function simulateClick(
-  driver: Driver,
-  element: WebElement,
-  waitFunc?: () => Promise<void>,
-) {
+export async function simulateClick(driver: Driver, element: WebElement) {
   // Hover over element before clicking
   await driver
     .actions({ async: true })
@@ -189,7 +188,5 @@ export async function simulateClick(
     .perform();
   await promisifiedTimeout(300);
   await element.click();
-
-  // Await the wait function
-  if (waitFunc) await waitFunc();
+  await promisifiedTimeout(100);
 }
