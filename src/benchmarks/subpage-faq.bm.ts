@@ -5,9 +5,9 @@ import {
   prepareBrowser,
   profilerWrapper,
   scrollToElement,
-  simulateClick,
 } from "../utilities/benchmark-utilities";
 import BenchmarkInput from "./benchmark-types";
+import { testDetails } from "./elements/details";
 
 const BENCHMARK_NAME = "subpage-faq" as const;
 
@@ -19,11 +19,11 @@ export default async function benchmark(options: BenchmarkInput) {
   const performTest = async (driver: Driver) => {
     await loadPage(driver, options.link + "/faq/");
 
-    const summaryButtons = await driver.findElements(By.css(".summary"));
-
-    for (const [index, button] of summaryButtons.entries()) {
-      await scrollToElement(driver, `.summary`, index);
-      await simulateClick(driver, button);
+    const selector = ".details";
+    const summaryButtons = await driver.findElements(By.css(selector));
+    for (const [index, detailsElement] of summaryButtons.entries()) {
+      await scrollToElement(driver, selector, index);
+      await testDetails(driver, detailsElement);
     }
   };
 
