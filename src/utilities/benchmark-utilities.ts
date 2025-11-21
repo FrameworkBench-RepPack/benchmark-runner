@@ -150,12 +150,15 @@ export async function scrollToElement(
 ) {
   const script = `
     return new Promise(resolve => {
-      const elem = ${elementIndex ? `document.querySelectorAll(arguments[0])[${elementIndex}];` : `document.querySelector(arguments[0]);`}
-      if (elem) {
+      const elem = ${elementIndex ? `document.querySelectorAll(arguments[0])[${elementIndex}]` : `document.querySelector(arguments[0])`};
+      if (!elem) {
+        throw new Error("Selector did not match any element: " + arguments[0]);
+      }
+      if (elem.getBoundingClientRect().bottom < window.innerHeight) {
+        resolve();
+      } else {
         document.addEventListener("scrollend", () => resolve(), { once: true });
         elem.scrollIntoView({ behavior: "smooth", block: "start" });
-      } else {
-        throw new Error("Selector did not match any element: " + arguments[0]);
       }
     })`;
   await runScript("SCROLL-TO-ELEMENT", driver, script, querySelector);
