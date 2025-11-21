@@ -162,22 +162,6 @@ export async function scrollToElement(
 }
 
 /**
- * Scroll to the bottom of the page
- * @param driver The driver to control the browser instance
- */
-export async function scrollToBottom(driver: Driver) {
-  const script = `
-    const elem = document.querySelector("body");
-    if (elem) { 
-      elem.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    } else {
-      throw new Error("Selector did not match any element: " + arguments[0]);
-    }`;
-  await runScript("SCROLL-TO-ELEMENT", driver, script);
-  await promisifiedTimeout(1000); // Wait for the scroll to complete
-}
-
-/**
  * Simulate a real click by hovering over the button before clicking.
  * @param driver The driver to control the browser instance
  * @param element Clickable element to be clicked
