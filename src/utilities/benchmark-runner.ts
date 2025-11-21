@@ -10,7 +10,7 @@ import { loadBenchmarks } from "./benchmark-file-helper";
 
 const SERVER_WORKER_PATH = path.resolve(
   import.meta.dirname,
-  "./server-worker/worker.ts",
+  "./server-worker/worker.ts"
 );
 
 const RESULTS_PATH = path.resolve(process.cwd(), "profiler-results");
@@ -63,19 +63,20 @@ export default async function startBenchmark(options: InputOptions) {
         resultsPath: RESULTS_PATH,
         link: `http://localhost:${options.serverPort}`,
         profilerOptions: options.profilerOptions,
+        driverOptions: options.driverOptions,
       };
 
       // Perform select benchmark
       const benchmarks = await loadBenchmarks(
         options.benchmarksPath,
-        options.chosenBenchmarks,
+        options.chosenBenchmarks
       );
       for (const [
         benchmarkIndex,
         [benchmarkName, benchmark],
       ] of benchmarks.entries()) {
         console.log(
-          `Benchmarking ${framework} with ${benchmarkName}.. (benchmark ${benchmarkIndex + 1}/${benchmarks.length}) (framework ${frameworkIndex + 1}/${frameworks.length}) (repetition ${repetition}/${options.repetitions})`,
+          `Benchmarking ${framework} with ${benchmarkName}.. (benchmark ${benchmarkIndex + 1}/${benchmarks.length}) (framework ${frameworkIndex + 1}/${frameworks.length}) (repetition ${repetition}/${options.repetitions})`
         );
         await benchmark(benchmarkInput);
       }

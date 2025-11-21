@@ -14,6 +14,10 @@ import {
   validateBenchmarks,
 } from "./utilities/benchmark-file-helper";
 import { listSites as getFrameworks } from "test-sites/listSites.ts";
+import {
+  BuilderOptions,
+  defaultSettings as defaultBuilderOptions,
+} from "./utilities/browser-utilities/driver-builder";
 
 const TEST_SITES_PATH = "./test-sites/" as const;
 const BENCHMARKS_PATH = path.resolve(import.meta.dirname, "./benchmarks/");
@@ -21,6 +25,7 @@ const BENCHMARKS_PATH = path.resolve(import.meta.dirname, "./benchmarks/");
 export type InputOptions = {
   serverPort: number;
   profilerOptions: ProfilerOptions;
+  driverOptions: BuilderOptions;
   repetitions: number;
   chosenBenchmarks: string[] | undefined;
   chosenFrameworks: string[] | undefined;
@@ -35,6 +40,7 @@ const inputOptions: InputOptions = {
     features: [],
     threads: [],
   },
+  driverOptions: defaultBuilderOptions,
   repetitions: 0,
   chosenBenchmarks: undefined,
   chosenFrameworks: undefined,
@@ -47,46 +53,47 @@ const program = new Command();
   program
     .name("Benchmark Runner")
     .description(
-      "A CLI for running performance focused benchmarks in the Firefox browser, using selenium",
+      "A CLI for running performance focused benchmarks in the Firefox browser, using selenium"
     )
     .version("1.0.0")
     .option("-p, --port", "specify port used for serving the websites", "1337")
+    .option("-d, --debug", "launch browser instances with debugger")
     .option(
       "--entries <entries>",
       "specify the buffer size used in the profiler",
-      "20000000",
+      "20000000"
     )
     .option(
       "--interval <interval>",
       "specify the profiler logging interval (ms)",
-      "100",
+      "100"
     )
     .option(
       "--features <features...>",
       `specify the logged features. Available features: ${Object.values(
-        ProfilerFeatures,
+        ProfilerFeatures
       ).join(", ")}`,
-      ["power"],
+      ["power"]
     )
     .option(
       "--threads <threads...>",
       `specify the logged threads. Available threads: ${Object.values(
-        ProfilerThreads,
+        ProfilerThreads
       ).join(", ")}`,
-      ["GeckoMain"],
+      ["GeckoMain"]
     )
     .option(
       "--repetitions <repetitions...>",
       `specify the number of test repetitions`,
-      "1",
+      "1"
     )
     .option(
       "--benchmarks <benchmarks...>",
-      `specify the benchmarks. Available benchmarks: ${(await getBenchmarkNames(BENCHMARKS_PATH)).join(", ")}`,
+      `specify the benchmarks. Available benchmarks: ${(await getBenchmarkNames(BENCHMARKS_PATH)).join(", ")}`
     )
     .option(
       "--frameworks <frameworks...>",
-      `specify the frameworks. Available frameworks: ${(await getFrameworks()).join(", ")}`,
+      `specify the frameworks. Available frameworks: ${(await getFrameworks()).join(", ")}`
     );
 
   // Parse program and extract options
@@ -106,18 +113,23 @@ const program = new Command();
     inputOptions.serverPort = port;
   }
 
+  /** Handle debug flag */
+  if (options.debug) {
+    inputOptions.driverOptions.debug = true;
+  }
+
   /** Handle entries flag */
   if (options.entries) {
     const entries = Number.parseInt(options.entries);
 
     if (Number.isNaN(entries))
       throw new Error(
-        `"${options.entries}" is not a valid buffer size - is not an integer`,
+        `"${options.entries}" is not a valid buffer size - is not an integer`
       );
 
     if (entries <= 0)
       throw new Error(
-        `"${options.entries}" is not a valid buffer size - must be larger than 0`,
+        `"${options.entries}" is not a valid buffer size - must be larger than 0`
       );
 
     inputOptions.profilerOptions.entries = entries;
@@ -129,13 +141,13 @@ const program = new Command();
 
     if (Number.isNaN(interval)) {
       throw new Error(
-        `"${options.interval}" is not a valid interval - is not an integer`,
+        `"${options.interval}" is not a valid interval - is not an integer`
       );
     }
 
     if (interval <= 0)
       throw new Error(
-        `"${options.interval}" is not a valid interval - must be larger than 0`,
+        `"${options.interval}" is not a valid interval - must be larger than 0`
       );
 
     inputOptions.profilerOptions.interval = interval;
@@ -183,13 +195,13 @@ const program = new Command();
 
     if (Number.isNaN(repetitions)) {
       throw new Error(
-        `"${options.repetitions}" is not a valid repetition count - is not an integer`,
+        `"${options.repetitions}" is not a valid repetition count - is not an integer`
       );
     }
 
     if (repetitions <= 0)
       throw new Error(
-        `"${options.repetitions}" is not a valid repetition count - must be larger than 0`,
+        `"${options.repetitions}" is not a valid repetition count - must be larger than 0`
       );
 
     inputOptions.repetitions = repetitions;
@@ -223,7 +235,7 @@ const program = new Command();
 
     if (
       !frameworks.every(
-        (f) => typeof f === "string" && validFrameworks.includes(f),
+        (f) => typeof f === "string" && validFrameworks.includes(f)
       )
     ) {
       throw new Error(`"${frameworks} contain an invalid framework"`);
@@ -249,7 +261,7 @@ const program = new Command();
         (error, stdout, stderr) => {
           if (error) reject(error);
           resolve();
-        },
+        }
       );
     });
   }

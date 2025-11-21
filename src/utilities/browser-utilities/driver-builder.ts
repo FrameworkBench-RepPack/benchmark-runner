@@ -63,7 +63,7 @@ export type BuilderOptions = {
   env: [string, string][];
 };
 
-const defaultSettings: BuilderOptions = {
+export const defaultSettings: BuilderOptions = {
   headless: false,
   debug: false,
   env: [],
