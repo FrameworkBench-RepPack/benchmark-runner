@@ -1,7 +1,7 @@
-import { By, until, Select } from "selenium-webdriver";
+import { By, Select } from "selenium-webdriver";
 import { Driver } from "selenium-webdriver/firefox";
 import {
-  openPageAndWait,
+  loadPage,
   prepareBrowser,
   profilerWrapper,
   promisifiedTimeout,
@@ -17,9 +17,7 @@ export default async function benchmark(options: BenchmarkInput) {
   };
 
   const performTest = async (driver: Driver) => {
-    await openPageAndWait(driver, options.link + "/list/", async () => {
-      await driver.wait(until.titleIs("Test site"), 10000);
-    });
+    await loadPage(driver, options.link + "/list/");
 
     // Change sorting strategy
     const selectElement = await driver.findElement(By.css(".controls select"));

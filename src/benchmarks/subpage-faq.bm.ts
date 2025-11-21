@@ -1,7 +1,7 @@
-import { By, until } from "selenium-webdriver";
+import { By } from "selenium-webdriver";
 import { Driver } from "selenium-webdriver/firefox";
 import {
-  openPageAndWait,
+  loadPage,
   prepareBrowser,
   profilerWrapper,
   scrollToElement,
@@ -17,9 +17,7 @@ export default async function benchmark(options: BenchmarkInput) {
   };
 
   const performTest = async (driver: Driver) => {
-    await openPageAndWait(driver, options.link + "/faq/", async () => {
-      await driver.wait(until.titleIs("Test site"), 10000);
-    });
+    await loadPage(driver, options.link + "/faq/");
 
     const summaryButtons = await driver.findElements(By.css(".summary"));
 
