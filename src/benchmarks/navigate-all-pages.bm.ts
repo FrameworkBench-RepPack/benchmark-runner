@@ -37,6 +37,12 @@ export default async function benchmark(options: BenchmarkInput) {
       "/tooltips",
       "/faq",
       "/list",
+      "/faq",
+      "/tooltips",
+      "/live",
+      "/static-2",
+      "/static-1",
+      "/",
     ]) {
       await scrollAndNavigate(driver, hrefSelector);
       await pageIsLoaded(driver);
