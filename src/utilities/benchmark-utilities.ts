@@ -179,7 +179,6 @@ export async function scrollToBottom(driver: Driver) {
  * Simulate a real click by hovering over the button before clicking.
  * @param driver The driver to control the browser instance
  * @param element Clickable element to be clicked
- * @param waitFunc If provided, await its execution before returning
  */
 export async function simulateClick(driver: Driver, element: WebElement) {
   // Hover over element before clicking
@@ -189,4 +188,5 @@ export async function simulateClick(driver: Driver, element: WebElement) {
     .perform();
   await promisifiedTimeout(300);
   await element.click();
+  await promisifiedTimeout(100);
 }
