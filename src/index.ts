@@ -73,7 +73,7 @@ const program = new Command();
       `specify the logged features. Available features: ${Object.values(
         ProfilerFeatures,
       ).join(", ")}`,
-      ["power"],
+      ["power", "bandwidth"],
     )
     .option(
       "--threads <threads...>",
