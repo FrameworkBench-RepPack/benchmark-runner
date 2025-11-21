@@ -5,7 +5,6 @@ import {
   prepareBrowser,
   profilerWrapper,
   promisifiedTimeout,
-  scrollToElement,
   simulateClick,
 } from "../utilities/benchmark-utilities";
 import BenchmarkInput from "./benchmark-types";
@@ -52,19 +51,13 @@ export default async function benchmark(options: BenchmarkInput) {
 
     // Disable all categories
     for (const element of categoryInputElements) {
-      await simulateClick(
-        driver,
-        element,
-      );
+      await simulateClick(driver, element);
       await promisifiedTimeout(200);
     }
 
     // Enable all categories
     for (const element of categoryInputElements) {
-      await simulateClick(
-        driver,
-        element,
-      );
+      await simulateClick(driver, element);
       await promisifiedTimeout(200);
     }
   };
