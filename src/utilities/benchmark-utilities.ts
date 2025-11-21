@@ -141,7 +141,7 @@ export async function pageIsLoaded(driver: Driver) {
 /**
  * Scroll to the first element matching the given query selector
  * @param driver The driver to control the browser instance
- * @param querySelector query selector
+ * @param querySelector Query selector for the element to scroll to
  */
 export async function scrollToElement(
   driver: Driver,
@@ -149,14 +149,16 @@ export async function scrollToElement(
   elementIndex?: number,
 ) {
   const script = `
-    const elem = ${elementIndex ? `document.querySelectorAll(arguments[0])[${elementIndex}];` : `document.querySelector(arguments[0]);`}
-    if (elem) { 
-      elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-      throw new Error("Selector did not match any element: " + arguments[0]);
-    }`;
+    return new Promise(resolve => {
+      const elem = ${elementIndex ? `document.querySelectorAll(arguments[0])[${elementIndex}];` : `document.querySelector(arguments[0]);`}
+      if (elem) {
+        document.addEventListener("scrollend", () => resolve(), { once: true });
+        elem.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        throw new Error("Selector did not match any element: " + arguments[0]);
+      }
+    })`;
   await runScript("SCROLL-TO-ELEMENT", driver, script, querySelector);
-  await promisifiedTimeout(1000); // Wait for the scroll to complete
 }
 
 /**
