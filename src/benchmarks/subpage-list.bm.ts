@@ -29,7 +29,7 @@ export default async function benchmark(options: BenchmarkInput) {
 
     /** Age Input Field */
     const ageToElement = await driver.findElement(
-      By.css(`input[name="age-to"]`)
+      By.css(`input[name="age-to"]`),
     );
 
     for (const maxAge of [70, 60, 50, 40, 30, 20, 10, 30, 40, 50, 60, 70]) {
@@ -44,7 +44,7 @@ export default async function benchmark(options: BenchmarkInput) {
 
     /** Category Input Fields */
     const categoryInputElements = await driver.findElements(
-      By.css(`input[name="category"]`)
+      By.css(`input[name="category"]`),
     );
 
     // Disable all categories
