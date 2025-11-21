@@ -96,7 +96,7 @@ export async function profilerWrapper(input: ProfilerWrapperOptions) {
 }
 
 /**
- * Function that promisify timeouts
+ * Function that promisifies timeouts
  * @param timeout Timeout in milliseconds
  */
 export async function promisifiedTimeout(timeout: number): Promise<void> {

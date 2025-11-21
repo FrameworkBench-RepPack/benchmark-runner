@@ -17,7 +17,7 @@ export default async function benchmark(options: BenchmarkInput) {
   const performTest = async (driver: Driver) => {
     await loadPage(driver, options.link + "/live/");
 
-    // The the page run for 60 seconds then end the test
+    // Let the page run for 60 seconds then end the test
     await promisifiedTimeout(60000);
   };
 
