@@ -5,6 +5,7 @@ import {
   prepareBrowser,
   profilerWrapper,
   scrollToElement,
+  traverseElements,
 } from "../utilities/benchmark-utilities";
 import BenchmarkInput from "./benchmark-types";
 import { testTooltip } from "./elements/tooltip";
@@ -22,10 +23,7 @@ export default async function benchmark(options: BenchmarkInput) {
     await loadPage(driver, options.link);
 
     const selector = ":is(#list, .tooltip, .details)";
-    const elements = await driver.findElements(By.css(selector));
-    for (const [index, element] of elements.entries()) {
-      await scrollToElement(driver, selector, index);
-
+    for await (const [index, element] of traverseElements(driver, selector)) {
       const id = await element.getAttribute("id");
       const className = await element.getAttribute("class");
       if (id === "list") {

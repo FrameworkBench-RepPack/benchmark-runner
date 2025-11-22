@@ -5,6 +5,7 @@ import {
   prepareBrowser,
   profilerWrapper,
   scrollToElement,
+  traverseElements,
 } from "../utilities/benchmark-utilities";
 import BenchmarkInput from "./benchmark-types";
 import { testDetails } from "./elements/details";
@@ -20,10 +21,8 @@ export default async function benchmark(options: BenchmarkInput) {
     await loadPage(driver, options.link + "/faq/");
 
     const selector = ".details";
-    const summaryButtons = await driver.findElements(By.css(selector));
-    for (const [index, detailsElement] of summaryButtons.entries()) {
-      await scrollToElement(driver, selector, index);
-      await testDetails(driver, detailsElement);
+    for await (const [index, element] of traverseElements(driver, selector)) {
+      await testDetails(driver, element);
     }
   };
 

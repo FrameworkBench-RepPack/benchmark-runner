@@ -139,6 +139,37 @@ export async function pageIsLoaded(driver: Driver) {
 }
 
 /**
+ * Finds all elements that match a query and returns them along with their index position on the page.
+ * Ensures that the returned element is always a valid connected element that is scrolled into the viewport.
+ *
+ * @param driver The driver to control the browser instance.
+ * @param selector The query to select elements with.
+ */
+export async function* traverseElements(
+  driver: Driver,
+  selector: string,
+): AsyncGenerator<[number, WebElement]> {
+  let index = 0;
+  let length = 1;
+  while (index < length) {
+    await scrollToElement(driver, selector, index);
+    const elements = await driver.findElements(By.css(selector));
+    if (elements.length === 0) {
+      throw new Error(`Selector "${selector}" did not match any elements.`);
+    }
+    const element = elements[index];
+    if (!element) {
+      throw new Error(
+        `Unexpected error: Element for selector "${selector}" at index ${index} disappeared after scrolling to it.`,
+      );
+    }
+    yield [index, element];
+    index++;
+    length = elements.length;
+  }
+}
+
+/**
  * Scroll to the first element matching the given query selector
  * @param driver The driver to control the browser instance
  * @param querySelector Query selector for the element to scroll to
