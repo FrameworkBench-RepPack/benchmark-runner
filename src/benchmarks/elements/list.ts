@@ -7,12 +7,11 @@ import {
 
 /**
  * A map corresponding each sort method to the first name in the list if it is sorted correctly.
- * There are two names, one for each list dataset.
  */
 const sortingToFirstNameMap: string[][] = [
   ["Accumorbi Temparis", "Aliquam luctus"],
   ["Aenean Leo", "Natoque Magnis"],
-  ["Ut Elementum", "Donec Erat"],
+  ["Ut Elementum", "Vestibaro Lethi", "Donec Erat"],
 ];
 
 /**
@@ -23,7 +22,9 @@ const sortingToFirstNameMap: string[][] = [
  */
 async function firstNameIs(driver: Driver, names: string[]) {
   return await driver.wait(async () => {
-    const element = await driver.findElement(By.css("#list .data tbody > tr:first-of-type > td:first-of-type"));
+    const element = await driver.findElement(
+      By.css("#list .data tbody > tr:first-of-type > td:first-of-type"),
+    );
     return names.includes(await element.getText());
   }, 5000);
 }
@@ -36,12 +37,16 @@ async function firstNameIs(driver: Driver, names: string[]) {
  */
 async function maxAgeIs(driver: Driver, maxAge: number) {
   return await driver.wait(async () => {
-    const elements = await driver.findElements(By.css("#list .data tbody > tr > td:nth-of-type(2)"));
+    const elements = await driver.findElements(
+      By.css("#list .data tbody > tr:not([hidden]) > td:nth-of-type(2)"),
+    );
     let maxFoundAge = 0;
-    for(const element of elements){
+    for (const element of elements) {
       const age = Number(await element.getText());
-      if(Number.isNaN(age)){
-        throw new Error("Found list entry that did not contain a numerical age entry.");
+      if (Number.isNaN(age)) {
+        throw new Error(
+          "Found list entry that did not contain a numerical age entry.",
+        );
       }
       maxFoundAge = Math.max(maxFoundAge, age);
     }
@@ -57,9 +62,11 @@ async function maxAgeIs(driver: Driver, maxAge: number) {
  */
 async function categoriesPresent(driver: Driver, amount: number) {
   return await driver.wait(async () => {
-    const elements = await driver.findElements(By.css("#list .data tbody > tr > td:nth-of-type(3)"));
+    const elements = await driver.findElements(
+      By.css("#list .data tbody > tr:not([hidden]) > td:nth-of-type(3)"),
+    );
     const categories = new Set();
-    for(const element of elements){
+    for (const element of elements) {
       const category = await element.getText();
       categories.add(category);
     }
