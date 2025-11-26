@@ -10,12 +10,24 @@ const contentSelector = ".details .contents";
  * @param driver The driver to control the browser instance.
  */
 async function detailsCurrentlyOpen(driver: Driver): Promise<number> {
-  const elements = await driver.findElements(By.css(contentSelector));
   let openDetails = 0;
-  for (const element of elements) {
-    if (await element.isDisplayed()) {
-      openDetails++;
+  let scanCompleted = false;
+  while (!scanCompleted) {
+    openDetails = 0;
+    try {
+      const elements = await driver.findElements(By.css(contentSelector));
+      for (const element of elements) {
+        if (await element.isDisplayed()) {
+          openDetails++;
+        }
+      }
+    } catch (error) {
+      console.warn(
+        `WARNING: DOM was changed while checking how many collapsibles were open, rerunning the check. Cause: ${(error as Error)?.message}`,
+      );
+      continue;
     }
+    scanCompleted = true;
   }
   return openDetails;
 }

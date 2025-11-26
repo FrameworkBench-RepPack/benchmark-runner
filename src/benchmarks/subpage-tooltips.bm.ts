@@ -1,10 +1,8 @@
-import { By } from "selenium-webdriver";
 import { Driver } from "selenium-webdriver/firefox";
 import {
   loadPage,
   prepareBrowser,
   profilerWrapper,
-  scrollToElement,
   traverseElements,
 } from "../utilities/benchmark-utilities";
 import BenchmarkInput from "./benchmark-types";

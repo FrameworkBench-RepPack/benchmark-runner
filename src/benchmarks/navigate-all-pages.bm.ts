@@ -1,4 +1,4 @@
-import { By } from "selenium-webdriver";
+import { By, until } from "selenium-webdriver";
 import { Driver } from "selenium-webdriver/firefox";
 import {
   loadPage,
@@ -15,9 +15,10 @@ const BENCHMARK_NAME = "navigate-all-pages" as const;
 async function scrollAndNavigate(driver: Driver, hrefSelector: string) {
   // Scroll to footer and open second static page
   await scrollToElement(driver, "footer");
-  const footerLink = await driver.findElement(
-    By.css(`footer a[href*="${hrefSelector}"]`),
-  );
+
+  const linkSelector = `footer a[href*="${hrefSelector}"]`;
+  await driver.wait(until.elementLocated(By.css(linkSelector)), 10000);
+  const footerLink = await driver.findElement(By.css(linkSelector));
   await simulateClick(driver, footerLink);
 }
 
