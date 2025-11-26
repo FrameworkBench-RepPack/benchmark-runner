@@ -74,7 +74,7 @@ export async function profilerWrapper(input: ProfilerWrapperOptions) {
 
     // Stop profiler and store data
     await profilerHandler.end(
-      `${input.resultsPath}/${input.framework}_${input.benchmarkName}_${input.repetition}.json`,
+      `${input.resultsPath}/${input.benchmarkName}_${input.framework}_${input.repetition}.json`,
     );
 
     // Clean up after the test

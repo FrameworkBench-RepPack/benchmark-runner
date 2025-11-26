@@ -13,7 +13,11 @@ const SERVER_WORKER_PATH = path.resolve(
   "./server-worker/worker.ts",
 );
 
-const RESULTS_PATH = path.resolve(process.cwd(), "profiler-results");
+const RESULTS_ROOT = path.resolve(process.cwd(), "profiler-results");
+const RESULTS_PATH = path.resolve(
+  RESULTS_ROOT,
+  String(Math.round(Date.now() / 1000 / 10)),
+);
 
 /**
  * Function to perform the benchmark on each framework
@@ -22,6 +26,7 @@ const RESULTS_PATH = path.resolve(process.cwd(), "profiler-results");
  */
 export default async function startBenchmark(options: InputOptions) {
   /** Make sure the results folder exists */
+  if (!fs.existsSync(RESULTS_ROOT)) fs.mkdirSync(RESULTS_ROOT);
   if (!fs.existsSync(RESULTS_PATH)) fs.mkdirSync(RESULTS_PATH);
 
   /** Determine frameworks to be benchmarked */
