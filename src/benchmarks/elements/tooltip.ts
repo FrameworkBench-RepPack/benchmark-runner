@@ -15,14 +15,21 @@ const contentSelector = ".tooltip + .contents";
  */
 async function tooltipsOpen(driver: Driver, amount: number) {
   return await driver.wait(async () => {
-    const elements = await driver.findElements(By.css(contentSelector));
-    let openTooltips = 0;
-    for (const el of elements) {
-      if (await el.isDisplayed()) {
-        openTooltips++;
+    try {
+      const elements = await driver.findElements(By.css(contentSelector));
+      let openTooltips = 0;
+      for (const el of elements) {
+        if (await el.isDisplayed()) {
+          openTooltips++;
+        }
       }
+      return openTooltips === amount;
+    } catch (error) {
+      console.warn(
+        `WARNING: DOM was changed while checking how many tooltips were open, rerunning the check. Cause: ${(error as Error)?.message}`,
+      );
+      return false;
     }
-    return openTooltips === amount;
   }, 5000);
 }
 

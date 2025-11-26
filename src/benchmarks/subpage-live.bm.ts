@@ -20,13 +20,20 @@ const dataSelector = "#live-data td";
  */
 async function showsData(driver: Driver, data: [number, number, number]) {
   return await driver.wait(async () => {
-    const elements = await driver.findElements(By.css(dataSelector));
-    for (let i = 0; i < 3; i++) {
-      if ((await elements[i]?.getText()) !== String(data[i])) {
-        return false;
+    try {
+      const elements = await driver.findElements(By.css(dataSelector));
+      for (let i = 0; i < 3; i++) {
+        if ((await elements[i]?.getText()) !== String(data[i])) {
+          return false;
+        }
       }
+      return true;
+    } catch (error) {
+      console.warn(
+        `WARNING: DOM was changed while checking the value of the data points, rerunning the check. Cause: ${(error as Error)?.message}`,
+      );
+      return false;
     }
-    return true;
   }, 4000);
 }
 

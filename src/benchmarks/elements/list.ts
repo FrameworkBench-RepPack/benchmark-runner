@@ -22,10 +22,17 @@ const sortingToFirstNameMap: string[][] = [
  */
 async function firstNameIs(driver: Driver, names: string[]) {
   return await driver.wait(async () => {
-    const element = await driver.findElement(
-      By.css("#list .data tbody > tr:first-of-type > td:first-of-type"),
-    );
-    return names.includes(await element.getText());
+    try {
+      const element = await driver.findElement(
+        By.css("#list .data tbody > tr:first-of-type > td:first-of-type"),
+      );
+      return names.includes(await element.getText());
+    } catch (error) {
+      console.warn(
+        `WARNING: DOM was changed while checking the name of the first list entry, rerunning the check. Cause: ${(error as Error)?.message}`,
+      );
+      return false;
+    }
   }, 5000);
 }
 
@@ -37,20 +44,27 @@ async function firstNameIs(driver: Driver, names: string[]) {
  */
 async function maxAgeIs(driver: Driver, maxAge: number) {
   return await driver.wait(async () => {
-    const elements = await driver.findElements(
-      By.css("#list .data tbody > tr:not([hidden]) > td:nth-of-type(2)"),
-    );
-    let maxFoundAge = 0;
-    for (const element of elements) {
-      const age = Number(await element.getText());
-      if (Number.isNaN(age)) {
-        throw new Error(
-          "Found list entry that did not contain a numerical age entry.",
-        );
+    try {
+      const elements = await driver.findElements(
+        By.css("#list .data tbody > tr:not([hidden]) > td:nth-of-type(2)"),
+      );
+      let maxFoundAge = 0;
+      for (const element of elements) {
+        const age = Number(await element.getText());
+        if (Number.isNaN(age)) {
+          throw new Error(
+            "Found list entry that did not contain a numerical age entry.",
+          );
+        }
+        maxFoundAge = Math.max(maxFoundAge, age);
       }
-      maxFoundAge = Math.max(maxFoundAge, age);
+      return maxFoundAge <= maxAge;
+    } catch (error) {
+      console.warn(
+        `WARNING: DOM was changed while checking the ages of list entries, rerunning the check. Cause: ${(error as Error)?.message}`,
+      );
+      return false;
     }
-    return maxFoundAge <= maxAge;
   }, 5000);
 }
 
@@ -62,15 +76,22 @@ async function maxAgeIs(driver: Driver, maxAge: number) {
  */
 async function categoriesPresent(driver: Driver, amount: number) {
   return await driver.wait(async () => {
-    const elements = await driver.findElements(
-      By.css("#list .data tbody > tr:not([hidden]) > td:nth-of-type(3)"),
-    );
-    const categories = new Set();
-    for (const element of elements) {
-      const category = await element.getText();
-      categories.add(category);
+    try {
+      const elements = await driver.findElements(
+        By.css("#list .data tbody > tr:not([hidden]) > td:nth-of-type(3)"),
+      );
+      const categories = new Set();
+      for (const element of elements) {
+        const category = await element.getText();
+        categories.add(category);
+      }
+      return categories.size === amount;
+    } catch (error) {
+      console.warn(
+        `WARNING: DOM was changed while checking the categories of list entries, rerunning the check. Cause: ${(error as Error)?.message}`,
+      );
+      return false;
     }
-    return categories.size === amount;
   }, 5000);
 }
 

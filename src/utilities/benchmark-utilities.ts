@@ -153,19 +153,29 @@ export async function* traverseElements(
   let length = 1;
   while (index < length) {
     await scrollToElement(driver, selector, index);
-    const elements = await driver.findElements(By.css(selector));
-    if (elements.length === 0) {
-      throw new Error(`Selector "${selector}" did not match any elements.`);
-    }
-    const element = elements[index];
-    if (!element) {
-      throw new Error(
-        `Unexpected error: Element for selector "${selector}" at index ${index} disappeared after scrolling to it.`,
+    let element: WebElement;
+    try {
+      const elements = await driver.findElements(By.css(selector));
+      if (elements.length === 0) {
+        throw new Error(`Selector did not match any elements.`);
+      }
+      const candidate = elements[index];
+      if (!candidate) {
+        throw new Error(`Element disappeared after scrolling to it.`);
+      }
+      if (!(await candidate.isDisplayed())) {
+        throw new Error(`Element is not displayed despite scrolling to it.`);
+      }
+      element = candidate;
+      length = elements.length;
+    } catch (error) {
+      console.warn(
+        `WARNING: DOM was changed after scrolling to a new element with selector "${selector}" at index ${index}, retrying selction of the new element. Cause: ${(error as Error)?.message}`,
       );
+      continue;
     }
     yield [index, element];
     index++;
-    length = elements.length;
   }
 }
 
