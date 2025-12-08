@@ -65,18 +65,24 @@ export default class ProfilerHandler {
       .join(", ")}]`;
 
     return `
+      var asyncFuncFinishedCallback = arguments[arguments.length - 1];
       Services.profiler.StartProfiler(
         ${options.entries},
         ${options.interval},
         ${featuresArray},
         ${threadsArray}
-      );
+      )
+        .then(asyncFuncFinishedCallback)
+        .catch((e) => asyncFuncFinishedCallback({'error' : e}));
     `;
   }
 
   #pauseScript(): string {
     return `
-        Services.profiler.Pause();
+      var asyncFuncFinishedCallback = arguments[arguments.length - 1];
+      Services.profiler.Pause()
+        .then(asyncFuncFinishedCallback)
+        .catch((e) => asyncFuncFinishedCallback({'error' : e}));
     `;
   }
 
@@ -86,20 +92,23 @@ export default class ProfilerHandler {
     return `
         var asyncFuncFinishedCallback = arguments[arguments.length - 1];
         Services.profiler.dumpProfileToFileAsync("${filePath}")
-            .then(asyncFuncFinishedCallback)
-            .catch((e) => asyncFuncFinishedCallback({'error' : e}));
+          .then(asyncFuncFinishedCallback)
+          .catch((e) => asyncFuncFinishedCallback({'error' : e}));
     `;
   }
 
   #endScript(): string {
     return `
-      Services.profiler.StopProfiler();
+      var asyncFuncFinishedCallback = arguments[arguments.length - 1];
+      Services.profiler.StopProfiler()
+        .then(asyncFuncFinishedCallback)
+        .catch((e) => asyncFuncFinishedCallback({'error' : e}));
     `;
   }
 
   async start(options: ProfilerOptions) {
     console.log(this.#startScript(options));
-    await runScriptInChrome(
+    await runScriptInChromeAsync(
       "PROFILER-START",
       this.#driver,
       this.#startScript(options),
@@ -107,7 +116,7 @@ export default class ProfilerHandler {
   }
 
   async end(filePath: string) {
-    await runScriptInChrome(
+    await runScriptInChromeAsync(
       "PROFILER-PAUSE",
       this.#driver,
       this.#pauseScript(),
@@ -119,6 +128,10 @@ export default class ProfilerHandler {
       this.#collectDataScript(filePath),
     );
 
-    await runScriptInChrome("PROFILER-END", this.#driver, this.#endScript());
+    await runScriptInChromeAsync(
+      "PROFILER-END",
+      this.#driver,
+      this.#endScript(),
+    );
   }
 }
